@@ -55,7 +55,7 @@ fn probed_sheep(name: &str, port: u16, mute_file: &std::path::Path) -> AppConfig
 async fn boot_probed_sheep_and_subscribed(
     port: u16,
     mute: &std::path::Path,
-) -> (Fixture, Client, u32, u32, tempfile::TempDir) {
+) -> (Fixture, Client, u32, u32) {
     let fixture = Fixture::boot(tempfile::tempdir().unwrap(), false).await;
     let mut client = fixture.connect().await;
 
@@ -81,7 +81,7 @@ async fn boot_probed_sheep_and_subscribed(
         .await;
     assert_eq!(subscribed.result.unwrap(), Response::Subscribed);
 
-    (fixture, client, drainee_id, drainee_pid, tempfile::tempdir().unwrap())
+    (fixture, client, drainee_id, drainee_pid)
 }
 
 /// The control for the case below: without it, an implementation that
@@ -97,7 +97,7 @@ async fn a_probed_reload_of_a_working_release_still_finishes() {
     let dir = tempfile::tempdir().unwrap();
     let mute = dir.path().join("mute");
 
-    let (fixture, mut client, _drainee_id, drainee_pid, _fixture_dir) =
+    let (fixture, mut client, _drainee_id, drainee_pid) =
         boot_probed_sheep_and_subscribed(port, &mute).await;
 
     let accepted = client
@@ -153,7 +153,7 @@ async fn a_replacement_that_serves_nothing_is_refused_not_reported_reloaded() {
     let dir = tempfile::tempdir().unwrap();
     let mute = dir.path().join("mute");
 
-    let (fixture, mut client, drainee_id, _drainee_pid, _fixture_dir) =
+    let (fixture, mut client, drainee_id, _drainee_pid) =
         boot_probed_sheep_and_subscribed(port, &mute).await;
 
     // The bad release, staged between the two spawns of one unchanged app.
